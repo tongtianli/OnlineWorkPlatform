@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block main %}
+    {% include "navbar.html" with activeTag='index' %}
+    <div class="container">
+        {% if request.user.is_authenticated %}
+
+        {% else %}
+            {#此处留作空行，不然jumbotron会很丑#}
+            <div class="starter-template">
+                <h1></h1>
+            </div>
+            <div class="jumbotron">
+                <h1>日程协作平台</h1>
+                <p class="lead">这是没有登录时的日程协作平台的首页，我也不清楚该放什么上去</p>
+                <p><a class="btn btn-lg btn-success" href="{% url 'account:create' %}" role="button">注册账号</a>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
