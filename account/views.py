@@ -1,47 +1,52 @@
 from django.contrib.auth import authenticate, login, logout
-from django.db.models import Q
 from django.shortcuts import render, HttpResponseRedirect
 from django.views import View
 
+from account.forms import UserCreationForm, UserLoginForm
 from .models import User
 
 
 class CreateUserView(View):
     def get(self, request):
-        return render(request, 'account/create-user.html')
+        form = UserCreationForm()
+        return render(request, 'account/create-user.html', locals())
 
     def post(self, request):
-        email = request.POST.get("inputEmail")
-        password = request.POST.get("inputPassword")
-        password2 = request.POST.get("inputPassword2")
-        if email and password and password2:
+        form = UserCreationForm(request.POST)
+        msg = '出错了'
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            password2 = form.cleaned_data['repeat']
             if password == password2:
-                user = User.objects(Q(email=email))
-                if not user:
-                    user = User(email=email, password=password)
+                user = User.objects.filter(email=email)
+                if len(user) > 0:
+                    msg = '该邮箱已经注册'
+                else:
+                    user = User(email=email, username=email, password=password)
                     user.save()
                     return HttpResponseRedirect('/')
-                else:
-                    return render(request, 'account/create-user.html', {'msg': '该邮箱已经注册'})
             else:
-                return render(request, 'account/create-user.html', {'msg': '两次输入的密码不一致'})
-        else:
-            return render(request, 'account/create-user.html', {'msg': '请填写全部字段'})
+                msg = '两次输入的密码不一致'
+        return render(request, 'account/create-user.html', locals())
 
 
 class LoginView(View):
     def get(self, request):
-        return render(request, 'account/login.html')
+        form = UserLoginForm()
+        return render(request, 'account/login.html', locals())
 
     def post(self, request):
-        email = request.POST.get("inputEmail")
-        password = request.POST.get("inputPassword")
-        auth = authenticate(request, username=email, password=password)
-        if auth is not None:
-            login(request, auth)
-            return HttpResponseRedirect('/')
-        else:
-            return render(request, 'account/login.html', {'msg': '请检查邮箱和密码是否正确'})
+        form = UserLoginForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            password = form.cleaned_data['password']
+            auth = authenticate(request, username=email, password=password)
+            if auth is not None:
+                login(request, auth)
+                return HttpResponseRedirect('/')
+            else:
+                return render(request, 'account/login.html', {'msg': '请检查邮箱和密码是否正确'})
 
 
 class LogoutView(View):

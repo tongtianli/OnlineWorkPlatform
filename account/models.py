@@ -43,17 +43,13 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     email = models.EmailField(max_length=50, verbose_name="邮箱", unique=True)
 
-    nickname = models.CharField(max_length=20, default="", verbose_name="昵称",blank=True)
-    name = models.CharField(max_length=20, default="", verbose_name="姓名",blank=True)
+    nickname = models.CharField(max_length=20, default="", verbose_name="昵称", blank=True)
+    name = models.CharField(max_length=20, default="", verbose_name="姓名", blank=True)
     avatar = models.ImageField(upload_to="avatar", default="avatar/default.png", verbose_name="头像")
 
     objects = UserManager()
 
-    workgroups = models.ManyToManyField(
-        WorkGroup,
-        verbose_name='所在工作组',
-        blank=True,
-    )
+    groupID = models.IntegerField(verbose_name='组序号', default=-1)
 
     is_admin = models.BooleanField(default=False)
 

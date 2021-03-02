@@ -5,12 +5,7 @@
 {% block main %}
     <form class="form-account" method="post">
         <h2 class="form-account-heading">注册账户</h2>
-        <label for="inputEmail" class="sr-only">电子邮箱</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="电子邮箱" required autofocus>
-        <label for="inputPassword" class="sr-only">密码</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="密码" required>
-        <label for="inputPassword" class="sr-only">重复密码</label>
-        <input type="password" id="inputPassword2" class="form-control" placeholder="重复密码" required>
+        {{ form.as_table }}
         {% if msg %}
             <div class="alert alert-danger" role="alert">
                 <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
@@ -19,7 +14,7 @@
             </div>
         {% endif %}
         {% csrf_token %}
-        <button type="submit" class="btn btn-lg btn-primary btn-block">注册用户</button>
+        <input type="submit" class="btn btn-lg btn-primary btn-block" value="注册用户"/>
         <p>已有账户？点此<a href="{% url 'account:login' %}">登录</a></p>
     </form>
 {% endblock %}

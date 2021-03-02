@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'account'
+    'account',
+    'agenda',
 ]
 
 MIDDLEWARE = [
@@ -113,3 +114,5 @@ STATICFILES_DIRS = [BASE_DIR.joinpath('static')]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.joinpath('media')
+
+LOGIN_URL = '/account/login/'
