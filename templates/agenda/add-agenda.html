@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <!--下拉美化插件 select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <!-- 时间选择器样式表 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.min.css"
+          rel="stylesheet">
+    {# 弹窗插件 layer #}
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+{% endblock %}
+
+{% block main %}
+    <div class="box box-danger">
+        <form class="form-horizontal" id="addForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" name='userID' value="{{ request.user.id }}"/>
+            <div class="form-group has-feedback">
+                <label class="col-sm-2 control-label">日程标题</label>
+                <div class="col-sm-3">
+                    <input autofocus type="text" class="form-control pull-right" name="title"/>
+                </div>
+                <label class="col-sm-2 control-label">优先级</label>
+                <div class="col-sm-3">
+                    <select class="form-control select2" style="width:100%;" name="priority_level">
+                        <option value="1">最高优先级</option>
+                        <option value="2">较高优先级</option>
+                        <option value="3" selected="selected">默认优先级</option>
+                        <option value="4">较低优先级</option>
+                        <option value="5">最低优先级</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-2 control-label">开始时间</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control pull-right form_datetime" name="start_time"/>
+                </div>
+                <label class="col-sm-2 control-label">结束时间</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control pull-right form_datetime" name="end_time"/>
+                </div>
+            </div>
+            <div class="form-group has-feedback">
+                <label class="col-sm-2 control-label">日程简介</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" name="description" rows="2" maxlength="256"
+                              placeholder="最多可以输入256个字符"></textarea>
+                </div>
+            </div>
+            <div class="box-footer ">
+                <div class="row span7 text-center ">
+                    <button type="button" id="btnCancel" class="btn btn-default margin-right ">重置</button>
+                    <button type="button" id="btnSave" class="btn btn-info margin-right ">保存</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <!-- 下拉美化插件 select2 -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- 时间选择器前置脚本 -->
+    <script src="https://cdn.bootcss.com/moment.js/2.22.1/moment-with-locales.min.js"></script>
+    <!-- moment汉化 -->
+    <script src="{% static 'plugins/moment/zh-cn.js' %}" charset="UTF-8"></script>
+    <!-- 时间选择器核心脚本 -->
+    <script src="https://cdn.bootcss.com/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+
+    <script type="text/javascript">
+        /* 初始化时间选择器 */
+        $(".form_datetime").datetimepicker({
+            locale: moment.locale('zh-cn'),
+        });
+
+        /* 重置和保存按钮逻辑 */
+        $("#btnCancel").click(function () {
+            window.location.reload();
+        });
+        $("#btnSave").click(function () {
+            var form = $("#addForm");
+            var data = form.serialize();
+            $.ajax({
+                type: form.attr('method'),
+                url: "{% url 'agenda:create' %}",
+                data: data,
+                cache: false,
+                success: function (msg) {
+                    if (msg.result) {
+                        layer.alert('数据保存成功！', {icon: 1}, function (index) {
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.alert('数据保存失败,请将信息填写完整！', {icon: 5});
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}

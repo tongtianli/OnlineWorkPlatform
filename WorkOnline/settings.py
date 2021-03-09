@@ -116,3 +116,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR.joinpath('media')
 
 LOGIN_URL = '/account/login/'
+
+ALLOWED_HOSTS = ['*', ]
+X_FRAME_OPTIONS = 'ALLOWALL'
