@@ -1,23 +1,68 @@
 {% extends "base.html" %}
+{% load static %}
 {% block main %}
     {% include "navbar.html" with activeTag='index' %}
     <div class="container">
         {% if request.user.is_authenticated %}
-            <div class="starter-template">
-                <h1></h1>
+            <div class="card shadow mt-2">
+                <div class="card-body row">
+                    <div class="col-sm">
+                        <img src="{% static '' %}{{ request.user.avatar }}" class="rounded mx-auto d-block"
+                             alt="用户头像" onclick="">
+                        <p class="d-flex justify-content-center">
+                            <a class="text-info" href="#account">{{ request.user.email }}</a>
+                        </p>
+                        {% if request.user.groupID == -1 %}
+                            <a class="d-flex justify-content-center text-warning"
+                               href="{% url 'account:group' %}">未加入工作组</a>
+                        {% else %}
+
+                        {% endif %}
+                        <hr/>
+                        <p class="text-secondary">
+                            认证：
+                            <img width="36" height="36" src="{% static 'drawable/phone_auth.png' %}">
+                            <img width="36" height="36" src="{% static 'drawable/email_auth.png' %}">
+                        </p>
+                        <div class="col-sm">
+                            <p class="d-flex justify-content-center">
+                                <a class="text-info mr-2" href="#account">订单中心</a>
+                                <span class="border-left">
+                                    <a class="text-info ml-2" href="{% url 'account:main' %}">用户中心</a>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-sm nav-tabs">
+                        <ul class="nav">
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">今天</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">明天</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="#">我的日历></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <div class="jumbotron">
-                <h1>日程协作平台</h1>
-                <p class="lead">您已登录</p>
-                <p><a class="btn btn-lg btn-success" href="{% url 'account:logout' %}" role="button">注销</a>
-                </p>
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h5 class="card-title">知识库</h5>
+                    <p class="card-text">组内知识库有新内容</p>
+                    <a href="#knowledge-base" class="btn btn-primary">前去查看</a>
+                </div>
+            </div>
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h5 class="card-title">我的团队</h5>
+                    <p class="card-text">团队有新公告</p>
+                    <a href="#group" class="btn btn-primary">管理团队</a>
+                </div>
             </div>
         {% else %}
-            {#此处留作空行，不然jumbotron会很丑#}
-            <div class="starter-template">
-                <h1></h1>
-            </div>
-            <div class="jumbotron">
+            <div class="jumbotron mt-2">
                 <h1>日程协作平台</h1>
                 <p class="lead">这是没有登录时的日程协作平台的首页，我也不清楚该放什么上去</p>
                 <p><a class="btn btn-lg btn-success" href="{% url 'account:create' %}" role="button">注册账号</a>

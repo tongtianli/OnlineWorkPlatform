@@ -1,35 +1,32 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block css %}
-    <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.0/main.min.css">
-    {# 弹窗插件 layer #}
+    <link rel="stylesheet" href="{% static 'plugins/fullcalendar-5.5.0/css/main.css' %}">
+    <!-- 弹窗插件 layer -->
     <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
 {% endblock %}
 {% block main %}
     {% include 'navbar.html' with activeTag="agenda" %}
-    <section class="content">
-        <div class="box box-primary">
-            <div class="box-body no-padding">
-                <!-- THE CALENDAR -->
-                <h3>个人日程</h3>
-                <div id="personal_calendar">
-                </div>
+    <div class="container-lg">
+        <div class="card shadow mt-2">
+            <div class="card-body">
+                <h4>个人日程</h4>
+                <div id="personal_calendar"></div>
             </div>
-            <!-- /.box-body -->
         </div>
-    </section>
+    </div>
 {% endblock %}
 {% block js %}
-    <script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.5.0/main.min.js"></script>
-    <!-- the moment-to-fullcalendar connector. must go AFTER the moment lib -->
-    {# 标题格式化需要用到moment #}
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/moment@5.5.0/main.global.min.js'></script>
-    {# 弹窗插件 layer #}
+    <script src="{% static 'plugins/moment-2.24.0/moment.js' %}"></script>
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/main.js' %}"></script>
+    <!-- fullcalendar提供的对moment驱动脚本. 要在moment之后引入 -->
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/support/moment@5.5.0/main.global.js' %}"></script>
+    <!-- 弹窗插件 layer -->
     <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <!-- fullcalendar 汉化 -->
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/zh-cn.js' %}" charset="UTF-8"></script>
     <script type="text/javascript">
-        {#    fullcalendar初始化和汉化设置    #}
+        {#    fullcalendar初始化设置    #}
         document.addEventListener('DOMContentLoaded', function () {
             var calendarEl = document.getElementById('personal_calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -59,21 +56,14 @@
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
-                buttonText: {
-                    today: '今天',
-                    month: '月',
-                    week: '周',
-                    day: '日',
-                },
                 {#设置标题格式#}
                 views: {
                     dayGridMonth: {
                         titleFormat: 'YYYY年M月',
                     },
-                    timeGridWeek: {titleFormat: 'YYYY年M月D日'},
+                    timeGridWeek: {titleFormat: 'M月D日'},
                     timeGridDay: {titleFormat: 'YYYY年M月D日'},
                 },
-                allDayText: "全天",
                 {# 显示个人日程 #}
                 events: [
                     {% for agenda in personal_agenda %}

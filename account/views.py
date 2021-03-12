@@ -1,12 +1,25 @@
-from django.contrib.auth import authenticate, login, logout
-from django.shortcuts import render, HttpResponseRedirect
+import json
+from datetime import datetime
+
+from django.contrib.auth import authenticate, login, logout, get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
+from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views import View
 
-from account.forms import UserCreationForm, UserLoginForm
-from .models import User
+from account.forms import UserCreationForm, UserLoginForm, WorkGroupForm
+from account.models import WorkGroup
+
+User = get_user_model()
 
 
-class CreateUserView(View):
+class AccountView(LoginRequiredMixin, View):
+    def get(self, request):
+        group = get_object_or_404(WorkGroup, pk=request.user.groupID)
+        return render(request, 'account/account.html',{'group':group})
+
+
+class UserCreateView(View):
     def get(self, request):
         form = UserCreationForm()
         return render(request, 'account/create-user.html', locals())
@@ -53,3 +66,38 @@ class LogoutView(View):
     def get(self, request):
         logout(request)
         return HttpResponseRedirect('/')
+
+
+class GroupView(LoginRequiredMixin, View):
+    def get(self, request):
+        user = request.user
+        group = None
+        group_users = None
+        if user.groupID != -1:
+            group = get_object_or_404(WorkGroup, pk=user.groupID)
+            group_users = User.objects.filter(groupID=group.id)
+        return render(request, 'account/group.html', {'group': group, 'group_users': group_users})
+
+
+class GroupJoinView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'account/join-group.html')
+
+
+class GroupCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'account/create-group.html')
+
+    def post(self, request):
+        res = dict(result=False)
+        form = WorkGroupForm(request.POST)
+        if form.is_valid():
+            form.create_time = datetime.now()
+            form.save()
+            leaderID = form.cleaned_data['leaderID']
+            user = get_object_or_404(User, pk=leaderID)
+            group = get_object_or_404(WorkGroup, leaderID=leaderID)
+            user.groupID = group.id
+            user.save()
+            res['result'] = True
+        return HttpResponse(json.dumps(res), content_type='application/json')

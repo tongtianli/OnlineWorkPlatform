@@ -5,8 +5,8 @@ from django.utils import timezone
 
 
 class WorkGroup(models.Model):
-    name = models.CharField(max_length=60, verbose_name="工作组")
-    leader = models.EmailField(max_length=50, verbose_name="组长")
+    name = models.CharField(max_length=60, verbose_name="组名")
+    leaderID = models.IntegerField(verbose_name='组长')
     introduction = models.CharField(max_length=256, verbose_name="简介")
     create_time = models.DateField(verbose_name="组创建日期", default=timezone.now)
 

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    {# 弹窗插件 layer #}
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+{% endblock %}
+{% block main %}
+    <form id="createGroupForm" method="post">
+        {% csrf_token %}
+        <input type="hidden" name='leaderID' value="{{ request.user.id }}"/>
+        <div class="form-group">
+            <label for="name" class="col-sm-2 control-label">组名称</label>
+            <input autofocus type="text" class="form-control" name="name"/>
+        </div>
+        <div class="form-group">
+            <label for="introduction" class="col-sm-2 control-label">简介</label>
+            <textarea class="form-control" name="introduction" rows="2" maxlength="256"
+                      placeholder="最多可以输入256个字符"></textarea>
+        </div>
+        <p class="d-flex justify-content-center">
+            <button type="reset" class="btn btn-danger mr-2">重置</button>
+            <button id="btnSubmit" class="btn btn-primary ml-2">提交</button>
+        </p>
+    </form>
+{% endblock %}
+{% block js %}
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <script type="text/javascript">
+        $("#btnSave").click(function () {
+            var form = $("#createGroupForm");
+            var data = form.serialize();
+            $.ajax({
+                type: form.attr('method'),
+                url: "{% url 'account:create-group' %}",
+                data: data,
+                cache: false,
+                success: function (msg) {
+                    if (msg.result) {
+                        layer.alert('数据保存成功！', {icon: 1}, function (index) {
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.alert('数据保存失败！', {icon: 5});
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

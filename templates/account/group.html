@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <!-- 下拉美化插件 select2 -->
+    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0-rc.0/css/select2-4.1.0-rc.0.css' %}"/>
+    <!-- 弹窗插件 layer -->
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+{% endblock %}
+{% block main %}
+    {% include 'navbar.html' with activeTag='account' %}
+    {% if request.user.groupID == -1 %}
+        <div class="container">
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h5 class="card-title">你还有没加入组</h5>
+                    <div class="col-sm">
+                        <div class="d-flex justify-content-center">
+                            选择
+                            <a id="joinGroup" class="btn btn-primary">加入</a>
+                            或者
+                            <a id="createGroup" class="btn btn-primary">创建一个组</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="container">
+
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <form method="post">
+                        <fieldset disabled>
+                            <legend>基本信息</legend>
+                            <input type="hidden" id="id" value="{{ group.id }}">
+                            <div class="form-group">
+                                <label for="name">工作组：</label>
+                                <input type="text" id="name" class="form-control" value="{{ group.name }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="introduction">简介：</label>
+                                <textarea type="text" id="introduction"
+                                          class="form-control">{{ group.introduction }}</textarea>
+                            </div>
+                        </fieldset>
+                        <div class="d-flex justify-content-center">
+                            <div class="row-cols-2">
+                                <button class="btn btn-light" id="edit">编辑</button>
+                                <button class="btn btn-primary" id="save">保存</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h4 class="card-title">组员</h4>
+                    <div class="pre-scrollable">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">账号</th>
+                                <th scope="col">名称</th>
+                                <th scope="col">操作</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for group_user in group_users %}
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ group_user.email }}</td>
+                                <td>{{ group_user.nickname }}</td>
+                                <td>
+                                    {% if group_user.id != request.user.id and request.user.id == group.leaderID %}
+                                        <button class="btn btn-danger">踢出</button>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h4 class="card-title">邀请</h4>
+                    <div class="row">
+                        <label class="col-sm-2 col-form-label" for="userSearch">按邮箱搜索 </label>
+                        <div class="col-sm-7">
+                            <input type="text" id="userSearch" class="form-control"/>
+                        </div>
+                        <div class="col-sm-3">
+                            <button class="btn btn-primary">发送邀请</button>
+                        </div>
+                    </div>
+                    <label>待接受的邀请：</label>
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">账号</th>
+                            <th scope="col">名称</th>
+                            <th scope="col">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for group_user in group_users %}
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ group_user.email }}</td>
+                            <td>{{ group_user.nickname }}</td>
+                            <td>
+                                {% if group_user.id != request.user.id and request.user.id == group.leaderID %}
+                                    <button class="btn btn-primary">test</button>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h4>公告栏</h4>
+                    <div class="alert alert-primary" role="alert">
+                        功能开发中
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+{% endblock %}
+{% block js %}
+    <!-- 下拉美化插件 select2 -->
+    <script src="{% static 'plugins/select2-4.1.0-rc.0/js/select2-4.1.0-rc.0.js' %}"></script>
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+
+    <script type="text/javascript">
+
+    </script>
+
+{% endblock %}

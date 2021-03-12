@@ -5,6 +5,7 @@
 {% block main %}
     <div class="container">
         <form class="form-account" method="post">
+            {% csrf_token %}
             <h2 class="form-account-heading">登录平台</h2>
             {{ form.as_table }}
             {% if msg %}
@@ -14,7 +15,6 @@
                     {{ msg }}
                 </div>
             {% endif %}
-            {% csrf_token %}
             <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
             <a class="btn btn-lg btn-primary btn-block btn-success" href="{% url 'account:create' %}" role="button">还没有账号？立即注册</a>
         </form>
