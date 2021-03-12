@@ -17,6 +17,8 @@
             {% endif %}
             <button class="btn btn-lg btn-primary btn-block" type="submit">登录</button>
             <a class="btn btn-lg btn-primary btn-block btn-success" href="{% url 'account:create' %}" role="button">还没有账号？立即注册</a>
+            <h5>忘记密码了？</h5>
+            <h5>点击<a class="text-primary" href="{% url 'account:password_reset_recover' %}">重置密码</a></h5>
         </form>
     </div> <!-- /container -->
 {% endblock %}

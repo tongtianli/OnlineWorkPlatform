@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block main %}
+    {% include 'navbar.html' with activeTag='knowledge-base' %}
+    <div class="container">
+        <div class="row">
+            <!-- 标题及作者 -->
+            <h1 class="col-12 mt-4 mb-4">{{ article.title }}</h1>
+            <div class="col-12 alert alert-success">
+                作者：{{ article.author }}
+                <a href="#" onclick="confirm_delete()">删除文章</a>
+                <a href="{% url "kbase:article-update" article.id %}">编辑文章</a>
+                <form
+                    style="display:none;"
+                    id="safe_delete"
+                    action="{% url 'kbase:article-delete' article.id %}"
+                    method="post">
+                    {% csrf_token %}
+                    <button type="submit"></button>
+                </form>
+            </div>
+            <!-- 文章正文 -->
+            <div class="col-12">
+                <p>{{ article.body|safe }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <script>
+    function confirm_delete(){
+        layer.open({
+            title:'确认删除',
+            content:'确认删除这篇文章吗？',
+            yes:function (index, layero){
+                $('form#safe_delete button').click();
+                layer.close(index);
+            }
+        })
+    }
+    </script>
+{% endblock %}

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'account',
     'agenda',
+    'kbase',
 ]
 
 MIDDLEWARE = [
@@ -119,3 +120,5 @@ LOGIN_URL = '/account/login/'
 
 ALLOWED_HOSTS = ['*', ]
 X_FRAME_OPTIONS = 'ALLOWALL'
+
+

@@ -16,7 +16,7 @@ User = get_user_model()
 class AccountView(LoginRequiredMixin, View):
     def get(self, request):
         group = get_object_or_404(WorkGroup, pk=request.user.groupID)
-        return render(request, 'account/account.html',{'group':group})
+        return render(request, 'account/account.html', {'group': group})
 
 
 class UserCreateView(View):
@@ -51,13 +51,14 @@ class LoginView(View):
 
     def post(self, request):
         form = UserLoginForm(request.POST)
+        next = request.GET.get('next','/')
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
             auth = authenticate(request, username=email, password=password)
             if auth is not None:
                 login(request, auth)
-                return HttpResponseRedirect('/')
+                return HttpResponseRedirect(next)
             else:
                 return render(request, 'account/login.html', {'msg': '请检查邮箱和密码是否正确'})
 

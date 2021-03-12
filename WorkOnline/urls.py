@@ -26,5 +26,6 @@ urlpatterns = [
 
     path('account/', include('account.urls')),
     path('agenda/', include('agenda.urls')),
+    path('kbase/', include('kbase.urls')),
     path('', IndexView.as_view(), name='index'),
 ]
