@@ -13,10 +13,12 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.static import serve
 
+from . import settings
 from .settings import MEDIA_ROOT
 from .views import IndexView
 
@@ -29,3 +31,4 @@ urlpatterns = [
     path('kbase/', include('kbase.urls')),
     path('', IndexView.as_view(), name='index'),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

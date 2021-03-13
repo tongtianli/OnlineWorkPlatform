@@ -11,4 +11,5 @@ urlpatterns = [
     path('group/', views.GroupView.as_view(), name='group'),
     path('group/join/', views.GroupJoinView.as_view(), name='join-group'),
     path('group/create/', views.GroupCreateView.as_view(), name='create-group'),
+    path('profile/avatar/',views.AvatarChangeView.as_view(),name='change-avatar'),
 ]

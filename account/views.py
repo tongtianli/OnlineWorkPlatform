@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
 from django.views import View
 
-from account.forms import UserCreationForm, UserLoginForm, WorkGroupForm
+from account.forms import UserCreationForm, UserLoginForm, WorkGroupForm, AvatarForm
 from account.models import WorkGroup
 
 User = get_user_model()
@@ -51,7 +51,7 @@ class LoginView(View):
 
     def post(self, request):
         form = UserLoginForm(request.POST)
-        next = request.GET.get('next','/')
+        next = request.GET.get('next', '/')
         if form.is_valid():
             email = form.cleaned_data['email']
             password = form.cleaned_data['password']
@@ -102,3 +102,15 @@ class GroupCreateView(LoginRequiredMixin, View):
             user.save()
             res['result'] = True
         return HttpResponse(json.dumps(res), content_type='application/json')
+
+
+class AvatarChangeView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'account/change-avatar.html')
+
+    def post(self, request):
+        form = AvatarForm(request.POST, request.FILES)
+        if form.is_valid() and 'avatar' in request.FILES:
+            user = request.user
+            user.avatar = form.cleaned_data['avatar']
+            user.save()

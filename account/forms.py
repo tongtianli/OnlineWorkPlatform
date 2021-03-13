@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth import get_user_model
 
 from .models import WorkGroup
 
@@ -25,3 +26,12 @@ class WorkGroupForm(forms.ModelForm):
     class Meta:
         model = WorkGroup
         fields = '__all__'
+
+
+User = get_user_model()
+
+
+class AvatarForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['avatar']
