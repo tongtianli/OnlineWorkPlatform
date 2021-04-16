@@ -71,13 +71,13 @@ class LogoutView(View):
 
 class GroupView(LoginRequiredMixin, View):
     def get(self, request):
-        user = request.user
         group = None
         group_users = None
-        if user.groupID != -1:
-            group = get_object_or_404(WorkGroup, pk=user.groupID)
+        all_nongroup_users = User.objects.filter(groupID=-1)
+        if request.user.groupID != -1:
+            group = get_object_or_404(WorkGroup, pk=request.user.groupID)
             group_users = User.objects.filter(groupID=group.id)
-        return render(request, 'account/group.html', {'group': group, 'group_users': group_users})
+        return render(request, 'account/group.html', locals())
 
 
 class GroupJoinView(LoginRequiredMixin, View):
@@ -114,3 +114,11 @@ class AvatarChangeView(LoginRequiredMixin, View):
             user = request.user
             user.avatar = form.cleaned_data['avatar']
             user.save()
+
+
+class HomePageView(LoginRequiredMixin, View):
+    def get(self, request, id):
+        user = get_object_or_404(User, pk=id)
+        return render(request, 'account/homepage.html', {'user': user})
+
+

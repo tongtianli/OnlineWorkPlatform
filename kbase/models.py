@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class Article(models.Model):
-    author = models.ForeignKey(User, on_delete=models.CASCADE)
+    author = models.ForeignKey(User, related_name='articles', on_delete=models.CASCADE)
     title = models.CharField(max_length=100, verbose_name='标题')
     body = models.TextField(verbose_name='正文')
     create_time = models.DateTimeField(default=datetime.now(), verbose_name='创建时间')

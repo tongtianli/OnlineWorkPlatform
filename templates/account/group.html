@@ -2,7 +2,7 @@
 {% load static %}
 {% block css %}
     <!-- 下拉美化插件 select2 -->
-    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0-rc.0/css/select2-4.1.0-rc.0.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0/css/select2.css' %}"/>
     <!-- 弹窗插件 layer -->
     <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
 {% endblock %}
@@ -87,7 +87,11 @@
                     <div class="row">
                         <label class="col-sm-2 col-form-label" for="userSearch">按邮箱搜索 </label>
                         <div class="col-sm-7">
-                            <input type="text" id="userSearch" class="form-control"/>
+                            <select id="userSearch" class="select2-selection--single col-12">
+                                {% for user in all_nongroup_users %}
+                                    <option value="{{ user }}">{{ user }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                         <div class="col-sm-3">
                             <button class="btn btn-primary">发送邀请</button>
@@ -132,12 +136,13 @@
 {% endblock %}
 {% block js %}
     <!-- 下拉美化插件 select2 -->
-    <script src="{% static 'plugins/select2-4.1.0-rc.0/js/select2-4.1.0-rc.0.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/select2.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/zh-CN.js' %}"></script>
     <!-- 弹窗插件 layer -->
     <script src="{% static 'plugins/layer/layer.js' %}"></script>
 
     <script type="text/javascript">
-
+        $("#userSearch").select2();
     </script>
 
 {% endblock %}

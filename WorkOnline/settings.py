@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'account',
     'agenda',
     'kbase',
+    'mail',
 ]
 
 MIDDLEWARE = [

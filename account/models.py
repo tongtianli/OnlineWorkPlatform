@@ -52,6 +52,7 @@ class User(AbstractUser):
     groupID = models.IntegerField(verbose_name='组序号', default=-1)
 
     is_admin = models.BooleanField(default=False)
+    unread_mail_num = models.IntegerField(verbose_name='未读信息数量', default=0)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

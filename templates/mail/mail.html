@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0/css/select2.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme-1.5.2/select2-bootstrap4.css' %}"/>
+{% endblock %}
+{% block main %}
+    {% include 'navbar.html' with activeTag='account' %}
+    <div class="container">
+        <a class="col btn btn-info mt-2" aria-expanded="true" data-toggle="collapse" href="#writeMailCollapse">
+            写信
+        </a>
+        <div class="collapse show" id="writeMailCollapse">
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <h5>写信</h5>
+                    <div class="row">
+                        <div class="col-12">
+                            <form method="post">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <label for="receive">收件人</label>
+                                    <input type="email" class="form-control" id="receiver" name="receiver">
+                                </div>
+                                <div class="form-group">
+                                    <label for="about">主题</label>
+                                    <input type="text" class="form-control" id="about" name="about">
+                                </div>
+                                <div class="form-group">
+                                    <label for="text">正文</label>
+                                    <textarea style="resize: none;" maxlength="50" type="text" class="form-control"
+                                              id="text" name="text"
+                                              rows="2"></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button id="btnSend" type="submit" class="btn btn-primary mr-2">发送</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <a class="col btn btn-info mt-2" aria-expanded="true" data-toggle="collapse" href="#receiveCollapse">
+            收件箱
+        </a>
+        <div class="collapse show" id="receiveCollapse">
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    {% if mails %}
+                        {% for mail in mails %}
+                            <div class="mb-4">
+                                <h5>{{ mail.about }}
+                                    <a class="text-primary" href="{% url 'account:homepage' 1 %}">
+                                        {{ mail.sender }}
+                                    </a>
+                                </h5>
+                                <p>{{ mail.text }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        收件箱里没有站内信
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <a class="col btn btn-info mt-2" aria-expanded="true" data-toggle="collapse" href="#sendCollapse">
+            发件箱
+        </a>
+        <div class="collapse show" id="sendCollapse">
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    {% if send_mails %}
+                        {% for mail in send_mails %}
+                            <div class="mb-4">
+                                <h5>{{ mail.about }}
+                                    <a class="text-primary" href="{% url 'account:homepage' 1 %}">
+                                        收件人:{{ mail.receiver }}
+                                    </a>
+                                </h5>
+                                <p>{{ mail.text }}</p>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        没有已发送的信件
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+{% block js %}
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/select2.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/zh-CN.js' %}"></script>
+{% endblock %}

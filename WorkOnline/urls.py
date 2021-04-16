@@ -29,6 +29,7 @@ urlpatterns = [
     path('account/', include('account.urls')),
     path('agenda/', include('agenda.urls')),
     path('kbase/', include('kbase.urls')),
+    path('account/mail', include('mail.urls')),
     path('', IndexView.as_view(), name='index'),
 ]
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
