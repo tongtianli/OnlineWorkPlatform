@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'agenda',
     'kbase',
     'mail',
+    'file',
 ]
 
 MIDDLEWARE = [
@@ -121,5 +122,3 @@ LOGIN_URL = '/account/login/'
 
 ALLOWED_HOSTS = ['*', ]
 X_FRAME_OPTIONS = 'ALLOWALL'
-
-

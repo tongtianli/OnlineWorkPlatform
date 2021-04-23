@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block main %}
+    {% include 'navbar.html' with activeTag='files' %}
+    {% if request.user.groupID == -1 %}
+        {% include 'account/no-group.html' %}
+    {% else %}
+        <div class="container">
+            <div class="card shadow mt-2">
+                <div class="card-body">
+                    <div class="row ml-3">
+                        总共{{ info.file_count }}个文件(已使用{{ info.file_size_count }}/{{ info.file_limit }}字节)
+                    </div>
+                    <h5 class="ml-3">
+                        当前文件夹：{{ path.name }}
+                    </h5>
+                    <div class="d-flex justify-content-end mb-4">
+                        <a class="btn btn-info mr-2" data-toggle="collapse" href="#newFolderCollapse">新建文件夹</a>
+                        <a class="btn btn-primary" data-toggle="collapse" href="#uploadCollapse">上传</a>
+                    </div>
+                    <div class="collapse ml-3 mr-3 mt-2 mb-4" id="newFolderCollapse">
+                        <form action="{% url 'file:new-folder' path.id %}" method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <input type="text" class="form-control col-10" placeholder="输入新文件夹名" name="folder">
+                                <button class="btn btn-primary col ml-2" type="submit">确定</button>
+                            </div>
+                        </form>
+
+                    </div>
+
+                    <div class="collapse ml-3 mr-3 mt-2 mb-4" id="uploadCollapse">
+                        <form method="post" action="{% url 'file:upload' path.id %}" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="row">
+                                <input type="file" id="file" name="file" class="form-control col-10">
+                                <button type="submit" class="btn btn-primary col ml-2">上传</button>
+                            </div>
+                        </form>
+                    </div>
+                    {% for child in children %}
+                        <div class="card">
+                            <div class="card-body">
+                                <a class="text-success" href="{% url 'file:folder' child.id %}">{{ child.name }}</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% for file in files %}
+                        <div class="card">
+                            <div class="card-body">
+                                <a href="{% url 'file:download' file.id %}">{{ file.name }}</a>
+                                <div class="row">
+                                    <div class="col-10">
+                                        <p>上传者：{{ file.owner }}</p>
+                                    </div>
+                                    {% if file.owner == request.user.email %}
+                                        <div class="col">
+                                            <form action="{% url 'file:delete' %}" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="fileID" value="{{ file.id }}">
+                                                <button type="submit" class="btn btn-danger">删除</button>
+                                            </form>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    {% if not children and not files %}
+                        <div class="text-info ml-3">
+                            这里什么都没有
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -15,7 +15,7 @@ class KBaseView(LoginRequiredMixin, View):
     def get(self, request):
         user = request.user
         articles = Article.objects.filter(author=user)
-        return render(request, 'kbase/main.html', {'articles': articles})
+        return render(request, 'kbase/kbase.html', {'articles': articles})
 
 
 class ArticleView(LoginRequiredMixin, View):

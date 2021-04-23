@@ -9,24 +9,9 @@
 {% block main %}
     {% include 'navbar.html' with activeTag='account' %}
     {% if request.user.groupID == -1 %}
-        <div class="container">
-            <div class="card shadow mt-2">
-                <div class="card-body">
-                    <h5 class="card-title">你还有没加入组</h5>
-                    <div class="col-sm">
-                        <div class="d-flex justify-content-center">
-                            选择
-                            <a id="joinGroup" class="btn btn-primary">加入</a>
-                            或者
-                            <a id="createGroup" class="btn btn-primary">创建一个组</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {% include 'account/no-group.html' %}
     {% else %}
         <div class="container">
-
             <div class="card shadow mt-2">
                 <div class="card-body">
                     <form method="post">
@@ -131,7 +116,6 @@
                 </div>
             </div>
         </div>
-
     {% endif %}
 {% endblock %}
 {% block js %}
