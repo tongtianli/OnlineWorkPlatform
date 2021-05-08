@@ -7,14 +7,16 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 
 from .forms import AgendaForm
-from .models import Agenda
+from .models import Agenda, Participant
 
 User = get_user_model()
 
 
 class AgendaView(LoginRequiredMixin, View):
     def get(self, request):
-        personal_agenda = Agenda.objects.filter(userID=request.user.id)
+        personal_agenda = Agenda.objects.filter(userID=request.user.id, groupID=-1)
+        if request.user.groupID != -1:
+            group_agenda = Agenda.objects.filter(groupID=request.user.groupID)
         return render(request, 'agenda/agenda.html', locals())
 
 
@@ -30,6 +32,30 @@ class AgendaCreateView(LoginRequiredMixin, View):
             res['result'] = True
         return http.HttpResponse(json.dumps(res), content_type='application/json')
 
+
+class GroupAgendaCreateView(LoginRequiredMixin, View):
+    def get(self, request):
+        users = User.objects.filter(groupID=request.user.groupID)
+        return render(request, 'agenda/add-group-agenda.html',locals())
+
+    def post(self,request):
+        res = dict(result=False)
+        form = AgendaForm(request.POST)
+        if form.is_valid():
+            participants = request.POST.getlist('participants')
+            agenda = form.save()
+            res['result'] = True
+            if participants:
+                for participant in participants:
+                    user = get_object_or_404(User, email=participant)
+                    p = Participant(agenda=agenda, user=user)
+                    p.save()
+            else:
+                group_users = User.objects.filter(groupID=request.user.groupID)
+                for user in group_users:
+                    p = Participant(agenda=agenda,user=user)
+                    p.save()
+        return http.HttpResponse(json.dumps(res), content_type='application/json')
 
 class AgendaDetialView(LoginRequiredMixin, View):
     def get(self, request, agenda_id):

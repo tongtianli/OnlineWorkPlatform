@@ -1,4 +1,7 @@
+from django.contrib.auth import get_user_model
 from django.db import models
+
+User = get_user_model()
 
 
 class Agenda(models.Model):
@@ -16,3 +19,8 @@ class Agenda(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Participant(models.Model):
+    agenda = models.ForeignKey(Agenda, verbose_name='日程', related_name='participants', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, verbose_name='人员', related_name='related_agenda', on_delete=models.CASCADE)

@@ -15,7 +15,9 @@ User = get_user_model()
 
 class AccountView(LoginRequiredMixin, View):
     def get(self, request):
-        group = get_object_or_404(WorkGroup, pk=request.user.groupID)
+        group = None
+        if WorkGroup.objects.filter(pk=request.user.groupID):
+            group = WorkGroup.objects.get(pk=request.user.groupID)
         return render(request, 'account/account.html', {'group': group})
 
 

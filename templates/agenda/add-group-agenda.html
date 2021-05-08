@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <!-- 时间选择器依赖 font-awesome -->
+    <link rel="stylesheet" href="{% static 'plugins/font-awesome-4.7.0/css/font-awesome.min.css' %}">
+    <!-- 时间选择器样式表 -->
+    <link rel="stylesheet"
+          href="{% static 'plugins/bootstrap4-datetimepicker-4.17.50/css/bootstrap-datetimepicker.css' %}">
+    <!-- 弹窗 layer -->
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+{% endblock %}
+
+{% block main %}
+    <div class="container mt-4">
+        <form id="addForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" name='userID' value="{{ request.user.id }}"/>
+            <input type="hidden" name="groupID" value="{{ request.user.groupID }}"/>
+            <div class="row form-group">
+                <label class="col-sm-2 control-label">日程标题</label>
+                <div class="col-sm-3">
+                    <input autofocus type="text" class="form-control pull-right" name="title"/>
+                </div>
+                <label class="col-sm-2 control-label">优先级</label>
+                <div class="col-sm-3">
+                    <select class="form-control select2" style="width:100%;" name="priority_level">
+                        <option value="1">最高优先级</option>
+                        <option value="2">较高优先级</option>
+                        <option value="3" selected="selected">默认优先级</option>
+                        <option value="4">较低优先级</option>
+                        <option value="5">最低优先级</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-sm-2 control-label">开始时间</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control pull-right form_datetime" name="start_time"/>
+                </div>
+                <label class="col-sm-2 control-label">结束时间</label>
+                <div class="col-sm-3">
+                    <input type="text" class="form-control pull-right form_datetime" name="end_time"/>
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-sm-2 control-label">日程简介</label>
+                <div class="col-sm-8">
+                    <textarea class="form-control" name="description" rows="2" maxlength="256"
+                              placeholder="最多可以输入256个字符"></textarea>
+                </div>
+            </div>
+            <div class="row form-group">
+                <label class="col-sm-2 control-label">参加人员</label>
+                <div class="col-sm-10">
+                    <select class="select2-selection select2-selection--multiple" id="participants" name="participants[]" multiple="multiple">
+                        {% for user in users %}
+                            <option id={{ user.id }}>{{ user }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-center">
+                <div class="row span7 text-center ">
+                    <button type="button" id="btnCancel" class="btn btn-danger mr-2 ">重置</button>
+                    <button type="button" id="btnSave" class="btn btn-primary ml-2 ">保存</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <!-- 日期处理moment -->
+    <script src="{% static 'plugins/moment-2.24.0/moment.js' %}"></script>
+    <!-- moment汉化 -->
+    <script src="{% static 'plugins/moment-2.24.0/zh-cn.js' %}" charset="UTF-8"></script>
+    <!-- 时间选择器核心脚本 -->
+    <script src="{% static 'plugins/bootstrap4-datetimepicker-4.17.50/js/bootstrap-datetimepicker.min.js' %}"></script>
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/select2.js' %}"></script>
+    <script src="{% static 'plugins/select2-4.1.0/js/zh-CN.js' %}"></script>
+
+    <script type="text/javascript">
+
+        $('#participants').select2();
+
+
+        /* 初始化时间选择器 */
+        $(".form_datetime").datetimepicker({
+            locale: moment.locale('zh-cn'),
+        });
+
+        /* 重置和保存按钮逻辑 */
+        $("#btnCancel").click(function () {
+            window.location.reload();
+        });
+        $("#btnSave").click(function () {
+            var form = $("#addForm");
+            var data = form.serialize();
+            $.ajax({
+                type: form.attr('method'),
+                url: "{% url 'agenda:create-group' %}",
+                data: data,
+                cache: false,
+                success: function (msg) {
+                    if (msg.result) {
+                        layer.alert('数据保存成功！', {icon: 1}, function (index) {
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.alert('数据保存失败,请将信息填写完整！', {icon: 5});
+                    }
+                }
+            });
+        });
+    </script>
+
+{% endblock %}
