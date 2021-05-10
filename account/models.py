@@ -74,3 +74,19 @@ class User(AbstractUser):
     @property
     def is_staff(self):
         return self.is_admin
+
+
+class Announcement(models.Model):
+    title = models.CharField(max_length=60, verbose_name="公告标题")
+    content = models.CharField(max_length=256, verbose_name="公告正文")
+    group = models.ForeignKey(WorkGroup, on_delete=models.CASCADE, related_name='announcements')
+
+
+class Confirmation(models.Model):
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE, related_name='confirms')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,related_name='group_announcement_confirms')
+
+
+class GroupInvitation(models.Model):
+    group = models.ForeignKey(WorkGroup, on_delete=models.CASCADE, related_name='unsolved_invites')
+    invitedUser = models.ForeignKey(User, on_delete=models.CASCADE, related_name='invites')

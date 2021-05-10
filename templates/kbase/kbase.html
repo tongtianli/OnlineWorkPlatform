@@ -3,25 +3,28 @@
 {% block main %}
     {% include 'navbar.html' with activeTag='knowledge-base' %}
     <div class="container">
-        <div class="row mt-2">
-            {% for article in articles %}
-                <!-- 文章内容 -->
-                <div class="col-4 mb-4">
-                    <!-- 卡片容器 -->
-                    <div class="card h-100">
-                        <!-- 标题 -->
-                        <h4 class="card-header">{{ article.title }}</h4>
-                        <!-- 摘要 -->
-                        <div class="card-body">
-                            <p class="card-text">{{ article.body|slice:'100' }}...</p>
-                        </div>
-                        <!-- 注脚 -->
-                        <div class="card-footer">
-                            <a href="{% url 'kbase:article-detail' article.id %}" class="btn btn-primary">阅读本文</a>
-                        </div>
+        <div class="row mt-2 mb-4">
+            <a class="btn btn-primary" href="{% url 'kbase:article-create' %}">添加文章</a>
+            <p class="text-primary ml-3">支持Markdown语法</p>
+        </div>
+        {% for article in articles %}
+            <!-- 文章内容 -->
+            <div class="col-4 mb-4">
+                <!-- 卡片容器 -->
+                <div class="card h-100">
+                    <!-- 标题 -->
+                    <h4 class="card-header">{{ article.title }}</h4>
+                    <!-- 摘要 -->
+                    <div class="card-body">
+                        <p class="card-text">{{ article.body|slice:'100' }}...</p>
+                    </div>
+                    <!-- 注脚 -->
+                    <div class="card-footer">
+                        <a href="{% url 'kbase:article-detail' article.id %}" class="btn btn-primary">阅读本文</a>
                     </div>
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
+
     </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
 
-from .models import WorkGroup
+from .models import WorkGroup, Announcement, GroupInvitation
 
 
 class UserCreationForm(forms.Form):
@@ -35,3 +35,9 @@ class AvatarForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['avatar']
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = '__all__'
+

@@ -12,4 +12,32 @@
             </div>
         </div>
     </div>
+    <div class="card shadow mt-2">
+        <div class="card-body">
+            <h5 class="card-title">待处理的邀请</h5>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">组名</th>
+                    <th scope="col">简介</th>
+                    <th scope="col">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for invite in invites %}
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ invite.group.name }}</td>
+                    <td>{{ invite.group.introduction }}</td>
+                    <td>
+                        <form action="{% url 'account:accept' %}" method="post">
+                            <input type="hidden" name="group" value="{{ invite.group.id }}">
+                            <input class="btn btn-primary" type="submit" value="加入">
+                        </form>
+                    </td>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

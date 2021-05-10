@@ -13,4 +13,9 @@ urlpatterns = [
     path('group/create/', views.GroupCreateView.as_view(), name='create-group'),
     path('profile/avatar/',views.AvatarChangeView.as_view(),name='change-avatar'),
     path('homepage/<int:user_id>/', views.HomePageView.as_view(),name='homepage'),
+    path('announcement/create/', views.AnnounceCreateView.as_view(),name='create-announcement'),
+    path('announcement/confirm/<int:announce_id>/',views.AnnounceConfirmView.as_view(),name='confirm-announcement'),
+    path('group/invite/',views.GroupInviteView.as_view(),name='invite'),
+    path('group/accept/',views.GroupAcceptView.as_view(),name='accept'),
+    path('group/cancel/',views.InviteCancelView.as_view(),name='cancel-invite'),
 ]
