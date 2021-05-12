@@ -1,12 +1,15 @@
 {% extends "base.html" %}
 {% load static %}
+{% block css %}
+    <link href="{% static 'css/scroller.css' %}" rel="stylesheet">
+{% endblock %}
 {% block main %}
     {% include "navbar.html" with activeTag='index' %}
     <div class="container">
         {% if request.user.is_authenticated %}
             <div class="card shadow mt-2">
                 <div class="card-body row">
-                    <div class="col-sm">
+                    <div class="col">
                         <img src="{% static '' %}{{ request.user.avatar }}" class="rounded mx-auto d-block"
                              alt="用户头像" onclick="">
                         <p class="d-flex justify-content-center">
@@ -24,50 +27,146 @@
                             <img width="36" height="36" src="{% static 'drawable/phone_auth.png' %}">
                             <img width="36" height="36" src="{% static 'drawable/email_auth.png' %}">
                         </p>
-                        <div class="col-sm">
-                            <p class="d-flex justify-content-center">
-                                <a class="text-info mr-2" href="#account">订单中心</a>
-                                <span class="border-left">
-                                    <a class="text-info ml-2" href="{% url 'account:main' %}">用户中心</a>
-                            </p>
+
+                        <div class="d-flex justify-content-center">
+                            <a class="text-info mr-2" href="{% url 'account:group' %}">小组管理</a>
+                            {#                                分割线#}
+                            <span class="border-left"></span>
+                            <a class="text-info ml-2" href="{% url 'account:main' %}">用户中心</a>
                         </div>
+
                     </div>
-                    <div class="col-sm nav-tabs">
-                        <ul class="nav">
+                    <div class="col">
+                        <ul class="nav nav-tabs mb-3">
                             <li class="nav-item">
-                                <a class="nav-link active" href="#">今天</a>
+                                <a class="nav-link active" data-toggle="pill" href="#today">今天</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">明天</a>
+                                <a class="nav-link" data-toggle="pill" href="#tomorrow">明天</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="#">我的日历></a>
+                                <a class="nav-link" data-toggle="pill" href="#day3">后天</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'agenda:main' %}">我的日历></a>
                             </li>
                         </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="today">
+                                {% if not day1_agenda %}
+                                    <div class="alert alert-primary" role="alert">
+                                        没有日程
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="cards-scroller">
+                                            {% for pa in day1_agenda %}
+                                                <a onclick="openLayer({{ pa.id }});" class="card-agenda">
+                                                    <div class="time">
+                                                        {{ pa.start_time.time }}
+                                                    </div>
+                                                    <p class="title">
+                                                        {{ pa.title }}
+                                                    </p>
+                                                    <hr>
+                                                    <div class="text-secondary ml-2">
+                                                        {{ pa.description }}
+                                                    </div>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="tomorrow">
+                                {% if not day2_agenda %}
+                                    <div class="alert alert-primary" role="alert">
+                                        没有日程
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="cards-scroller">
+                                            {% for pa in day2_agenda %}
+                                                <a onclick="openLayer({{ pa.id }});" class="card-agenda">
+                                                    <div class="time">
+                                                        {{ pa.start_time.time }}
+                                                    </div>
+                                                    <p class="title">
+                                                        {{ pa.title }}
+                                                    </p>
+                                                    <hr>
+                                                    <div class="text-secondary ml-2">
+                                                        {{ pa.description }}
+                                                    </div>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="tab-pane fade" id="day3">
+                                {% if not day3_agenda %}
+                                    <div class="alert alert-primary" role="alert">
+                                        没有日程
+                                    </div>
+                                {% else %}
+                                    <div class="row">
+                                        <div class="cards-scroller">
+                                            {% for pa in day3_agenda %}
+                                                <a onclick="openLayer({{ pa.id }});" class="card-agenda">
+                                                    <div class="time">
+                                                        {{ pa.start_time.time }}
+                                                    </div>
+                                                    <p class="title">
+                                                        {{ pa.title }}
+                                                    </p>
+                                                    <hr>
+                                                    <div class="text-secondary ml-2">
+                                                        {{ pa.description }}
+                                                    </div>
+                                                </a>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="card shadow mt-2">
                 <div class="card-body">
-                    <h5 class="card-title">知识库</h5>
-                    <p class="card-text">组内知识库有新内容</p>
-                    <a href="#knowledge-base" class="btn btn-primary">前去查看</a>
-                </div>
-            </div>
-            <div class="card shadow mt-2">
-                <div class="card-body">
-                    <h5 class="card-title">我的团队</h5>
-                    <p class="card-text">团队有新公告</p>
-                    <a href="#group" class="btn btn-primary">管理团队</a>
+                    <h5 class="card-title">智能统计</h5>
+
                 </div>
             </div>
         {% else %}
             <div class="jumbotron mt-2">
                 <h1>日程协作平台</h1>
-                <p class="lead">这是没有登录时的日程协作平台的首页，我也不清楚该放什么上去</p>
+                <p class="lead">你还没有登录，请注册或者登录</p>
                 <p><a class="btn btn-lg btn-success" href="{% url 'account:create' %}" role="button">注册账号</a>
                 </p>
             </div>
         {% endif %}
     </div>
+{% endblock %}
+
+{% block js %}
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <script>
+        var openLayer = function (id) {
+            var url = "{% url 'agenda:detail' 12345 %}".replace('12345', id);
+            layer.open({
+                type: 2,
+                title: '日程详情',
+                shadeClose: false,
+                maxmin: true,
+                area: ['800px', '460px'],
+                content: url,
+                end: function () {
+                    window.location.reload();
+                }
+            });
+        }
+    </script>
 {% endblock %}
