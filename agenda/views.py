@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, get_object_or_404
 from django.views import View
 
+from mail.models import Message
 from .forms import AgendaForm
 from .models import Agenda, Participant
 
@@ -36,9 +37,9 @@ class AgendaCreateView(LoginRequiredMixin, View):
 class GroupAgendaCreateView(LoginRequiredMixin, View):
     def get(self, request):
         users = User.objects.filter(groupID=request.user.groupID)
-        return render(request, 'agenda/add-group-agenda.html',locals())
+        return render(request, 'agenda/add-group-agenda.html', locals())
 
-    def post(self,request):
+    def post(self, request):
         res = dict(result=False)
         form = AgendaForm(request.POST)
         if form.is_valid():
@@ -50,12 +51,15 @@ class GroupAgendaCreateView(LoginRequiredMixin, View):
                     user = get_object_or_404(User, email=participant)
                     p = Participant(agenda=agenda, user=user)
                     p.save()
+                    Message(owner=user, type=1, item_id=agenda.id, content=agenda.title, involved=request.user).save()
             else:
                 group_users = User.objects.filter(groupID=request.user.groupID)
                 for user in group_users:
-                    p = Participant(agenda=agenda,user=user)
+                    p = Participant(agenda=agenda, user=user)
                     p.save()
+                    Message(owner=user, type=1, item_id=agenda.id, content=agenda.title, involved=request.user).save()
         return http.HttpResponse(json.dumps(res), content_type='application/json')
+
 
 class AgendaDetialView(LoginRequiredMixin, View):
     def get(self, request, agenda_id):

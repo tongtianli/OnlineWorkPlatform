@@ -21,7 +21,8 @@
                                 {% csrf_token %}
                                 <div class="form-group">
                                     <label for="receive">收件人</label>
-                                    <input type="email" class="form-control" id="receiver" name="receiver">
+                                    <input type="email" class="form-control" id="receiver" name="receiver_name" maxlength="256"
+                                    data-toggle="tooltip" data-placement="left" title='输入用户邮箱,或输入"小组"向小组里其他成员发送站内信'>
                                 </div>
                                 <div class="form-group">
                                     <label for="about">主题</label>
@@ -49,11 +50,11 @@
         <div class="collapse show" id="receiveCollapse">
             <div class="card shadow mt-2">
                 <div class="card-body">
-                    {% if mails %}
-                        {% for mail in mails %}
+                    {% if request.user.received_mails.count %}
+                        {% for mail in request.user.received_mails.all %}
                             <div class="mb-4">
                                 <h5>{{ mail.about }}
-                                    <a class="text-primary" href="{% url 'account:homepage' 1 %}">
+                                    <a class="text-primary" href="{% url 'account:homepage' mail.sender.id %}">
                                         {{ mail.sender }}
                                     </a>
                                 </h5>
@@ -72,11 +73,11 @@
         <div class="collapse show" id="sendCollapse">
             <div class="card shadow mt-2">
                 <div class="card-body">
-                    {% if send_mails %}
-                        {% for mail in send_mails %}
+                    {% if request.user.sent_mails.count %}
+                        {% for mail in request.user.sent_mails.all %}
                             <div class="mb-4">
                                 <h5>{{ mail.about }}
-                                    <a class="text-primary" href="{% url 'account:homepage' 1 %}">
+                                    <a class="text-primary" href="{% url 'account:homepage' mail.receiver.id %}">
                                         收件人:{{ mail.receiver }}
                                     </a>
                                 </h5>
@@ -97,4 +98,7 @@
     <script src="{% static 'plugins/layer/layer.js' %}"></script>
     <script src="{% static 'plugins/select2-4.1.0/js/select2.js' %}"></script>
     <script src="{% static 'plugins/select2-4.1.0/js/zh-CN.js' %}"></script>
+    <script>
+        $('[data-toggle="tooltip"]').tooltip();
+    </script>
 {% endblock %}

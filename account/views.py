@@ -9,6 +9,7 @@ from django.views import View
 
 from account.forms import UserCreationForm, UserLoginForm, WorkGroupForm, AvatarForm, AnnouncementForm
 from account.models import WorkGroup, Confirmation, GroupInvitation
+from mail.models import Message
 
 User = get_user_model()
 
@@ -137,6 +138,8 @@ class AnnounceCreateView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
             res['result'] = True
+            for user in User.objects.filter(groupID=request.user.groupID):
+                Message(owner=user, type=0, content='新公告', involved=request.user).save()
         return HttpResponse(json.dumps(res), content_type='application/json')
 
 
@@ -154,6 +157,7 @@ class GroupInviteView(LoginRequiredMixin, View):
         if not GroupInvitation.objects.filter(group=group, invitedUser=user):
             i = GroupInvitation(group=group, invitedUser=user)
             i.save()
+            Message(owner=user, type=0, content='新的小组邀请').save()
             return redirect('account:group')
         else:
             return HttpResponse('请不要重复发送请求')
@@ -167,6 +171,8 @@ class GroupAcceptView(LoginRequiredMixin, View):
         user = request.user
         user.groupID = group.id
         user.save()
+        # 向组长发送通知
+        Message(owner_id=group.leaderID, type=0, content='新组员加入', involved=user).save()
         return redirect("account:group")
 
 

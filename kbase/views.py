@@ -7,6 +7,7 @@ from django.views import View
 
 from kbase.forms import ArticlePostForm
 from kbase.models import Article
+from mail.models import Message
 
 User = get_user_model()
 
@@ -41,15 +42,22 @@ class ArticleCreateView(LoginRequiredMixin, View):
             new_article = form.save(commit=False)
             new_article.author = request.user
             new_article.save()
+            # 向其他组员发送通知
+            for user in User.objects.filter(groupID=request.user.groupID):
+                if user != request.user:
+                    Message(owner=user, type=2, item_id=new_article.id, content=new_article.title,
+                            involved=request.user).save()
             return redirect('kbase:main')
         else:
             return HttpResponse('表单内容有误，请重新填写')
+
 
 class ArticleDeleteView(LoginRequiredMixin, View):
     def post(self, request, article_id):
         article = get_object_or_404(Article, pk=article_id)
         article.delete()
         return redirect('kbase:main')
+
 
 class ArticleUpdateView(LoginRequiredMixin, View):
     def get(self, request, article_id):
