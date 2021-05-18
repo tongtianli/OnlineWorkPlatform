@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'plugins/fullcalendar-5.5.0/css/main.css' %}">
+    <!-- 弹窗 layer -->
+    <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0/css/select2.css' %}"/>
+{% endblock %}
+{% block main %}
+    {% if conflict %}
+        <div class="card shadow mt-2">
+            <div class="card-body">
+                <h4>冲突日程</h4>
+                <div id="calendar"></div>
+            </div>
+        </div>
+        <div class="card shadow mt-2">
+            <div class="card-body">
+                <h4>冲突日程</h4>
+                <div class="pre-scrollable">
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">组员名称</th>
+                            <th scope="col">日程名称</th>
+                            <th scope="col">开始时间</th>
+                            <th scope="col">结束时间</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for user,agenda_list in conflict.items %}
+                            {% for agenda in agenda_list %}
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td><a href="{% url 'account:homepage' user.id %}">{{ user }}</a></td>
+                                <td><a href="{% url 'agenda:detail' agenda.id %}">{{ agenda.title }}</a></td>
+                                <td>{{ agenda.start_time }}</td>
+                                <td>{{ agenda.end_time }}</td>
+                            {% endfor %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="card shadow mt-2">
+            <div class="card-body">
+                <div class="alert-primary">
+                    没有冲突日程
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <div class="card shadow mt-2">
+        <div class="card-body">
+
+            <form id="addForm" method="post" action="{% url 'agenda:create-group' %}">
+                {% csrf_token %}
+                <input type="hidden" name='userID' value="{{ request.user.id }}"/>
+                <input type="hidden" name="groupID" value="{{ request.user.groupID }}"/>
+                <div class="row form-group">
+                    <label class="col-sm-2 control-label">日程标题</label>
+                    <div class="col-sm-3">
+                        <input readonly type="text" class="form-control" name="title" value="{{ new_agenda.title }}">
+                    </div>
+                    <label class="col-sm-2 control-label">优先级</label>
+                    <div class="col-sm-3">
+                        <input readonly type="text" class="form-control" name="priority_level"
+                               value="{{ new_agenda.priority_level }}">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-2 control-label">开始时间</label>
+                    <div class="col-sm-3">
+                        <input readonly type="text" class="form-control" name="start_time"
+                               value="{{ new_agenda.start_time.isoformat }}">
+                    </div>
+                    <label class="col-sm-2 control-label">结束时间</label>
+                    <div class="col-sm-3">
+                        <input readonly type="text" class="form-control" name="end_time"
+                               value="{{ new_agenda.end_time.isoformat }}">
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <label class="col-sm-2 control-label">日程简介</label>
+                    <div class="col-sm-8">
+                        <input readonly class="form-control" type="text" name="description"
+                               value="{{ new_agenda.description }}">
+                    </div>
+                </div>
+                <select style="display: none" name="participants">
+                    {% for participant in participants %}
+                        <option selected="selected">{{ participant }}</option>
+                    {% endfor %}
+                </select>
+                <div class="d-flex justify-content-center">
+                    {% if conflict %}
+                        <button data-toggle="tooltip" data-placement="left" title="无视冲突保存日程" id="btnSave" type="button"
+                                class="btn btn-danger">保存
+                        </button>
+                    {% else %}
+                        <button id="btnSave" type="button" class="btn btn-primary">保存</button>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+{% block js %}
+    <script src="{% static 'plugins/moment-2.24.0/moment.js' %}"></script>
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/main.js' %}"></script>
+    <!-- fullcalendar提供的对moment驱动脚本. 要在moment之后引入 -->
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/support/moment@5.5.0/main.global.js' %}"></script>
+    <!-- 弹窗插件 layer -->
+    <script src="{% static 'plugins/layer/layer.js' %}"></script>
+    <!-- fullcalendar 汉化 -->
+    <script src="{% static 'plugins/fullcalendar-5.5.0/js/zh-cn.js' %}" charset="UTF-8"></script>
+    <script>
+        $('[data-toggle="tooltip"]').tooltip();
+        {% if conflict %}
+            document.addEventListener('DOMContentLoaded', function () {
+                var calendarEl = document.getElementById('calendar');
+                var calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridDay',
+                    locale: 'zh-cn',
+                    headerToolbar: {
+                        left: 'prev,next,today',
+                        center: 'title',
+                        right: 'timeGridDay,timeGridWeek,dayGridMonth'
+                    },
+                    {#设置标题格式#}
+                    views: {
+                        dayGridMonth: {titleFormat: 'YYYY年M月',},
+                        timeGridWeek: {titleFormat: 'M月D日'},
+                        timeGridDay: {titleFormat: 'YYYY年M月D日'},
+                    },
+                    {# 显示个人日程 #}
+                    events: [
+                        {
+                            title: '{{ new_agenda.title }}(当前日程)',
+                            start: '{{ agenda.start_time | date:"Y-m-d H:i"}}',
+                            end: '{{ agenda.end_time | date:"Y-m-d H:i"}}',
+                            backgroundColor: '#f300fa',
+                        },
+                        {% for agenda_list in conflict.values %}
+                            {% for agenda in agenda_list %}
+                                {
+                                    id: {{ agenda.id }},
+                                    title: '{{ agenda.title }}',
+                                    start: '{{ agenda.start_time | date:"Y-m-d H:i"}}',
+                                    end: '{{ agenda.end_time | date:"Y-m-d H:i"}}',
+                                    {% if agenda.priority_level == 5  %}
+                                        backgroundColor: '#0073b7',
+                                    {% elif agenda.priority_level == 4 %}
+                                        backgroundColor: '#00fff4',
+                                    {% elif agenda.priority_level == 3 %}
+                                        backgroundColor: '#00a65a',
+                                    {% elif agenda.priority.level == 2 %}
+                                        backgroundColor: '#ffe400',
+                                    {% else %}
+                                        backgroundColor: '#dd4b39',
+                                    {% endif %}
+                                },
+                            {% endfor %}
+                        {% endfor %}
+                    ],
+                    {# 点击事件 #}
+                    eventClick: function (info) {
+                        {# django 模板无法直接传入js变量，这里进行字符串替换 #}
+                        var eventID = info.event.id;
+                        var url = "{% url 'agenda:detail' 12345 %}".replace('12345', eventID)
+                        layer.open({
+                            type: 2,
+                            title: '日程详情',
+                            shadeClose: false,
+                            maxmin: true,
+                            content: url,
+                            end: function () {
+                                window.location.reload();
+                            }
+                        });
+                    }
+
+                });
+                calendar.render();
+            });
+        {% endif %}
+        $('#btnSave').click(function () {
+            var data = $('#addForm').serialize();
+            $.ajax({
+                type: 'post',
+                url: "{% url 'agenda:create-group' %}",
+                data: data,
+                success: function (msg) {
+                    if (msg.result) {
+                        layer.alert('数据保存成功！', {icon: 1}, function (index) {
+                            parent.location.reload();
+                        });
+                    } else {
+                        layer.alert('数据保存失败,请将信息填写完整！', {icon: 5});
+                    }
+                }
+            })
+        });
+
+    </script>
+{% endblock %}

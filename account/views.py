@@ -120,8 +120,8 @@ class AvatarChangeView(LoginRequiredMixin, View):
 
 
 class HomePageView(LoginRequiredMixin, View):
-    def get(self, request, id):
-        user = get_object_or_404(User, pk=id)
+    def get(self, request, user_id):
+        user = get_object_or_404(User, pk=user_id)
         return render(request, 'account/homepage.html', {'user': user})
 
 

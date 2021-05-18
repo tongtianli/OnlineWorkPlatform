@@ -8,11 +8,12 @@
           href="{% static 'plugins/bootstrap4-datetimepicker-4.17.50/css/bootstrap-datetimepicker.css' %}">
     <!-- 弹窗 layer -->
     <link rel="stylesheet" href="{% static 'plugins/layer/theme/default/layer.css' %}"/>
+    <link rel="stylesheet" href="{% static 'plugins/select2-4.1.0/css/select2.css' %}"/>
 {% endblock %}
 
 {% block main %}
     <div class="container mt-4">
-        <form id="addForm" method="post">
+        <form id="addForm" method="post" action="{% url 'agenda:conflict' %}">
             {% csrf_token %}
             <input type="hidden" name='userID' value="{{ request.user.id }}"/>
             <input type="hidden" name="groupID" value="{{ request.user.groupID }}"/>
@@ -52,9 +53,10 @@
             <div class="row form-group">
                 <label class="col-sm-2 control-label">参加人员</label>
                 <div class="col-sm-10">
-                    <select class="select2-selection select2-selection--multiple" id="participants" name="participants[]" multiple="multiple">
+                    <select class="form-control" data-toggle="tooltip" data-placement="bottom" title="不填写即全体组员"
+                            id="participants" name="participants" multiple="multiple">
                         {% for user in users %}
-                            <option id={{ user.id }}>{{ user }}</option>
+                            <option>{{ user }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -62,7 +64,7 @@
             <div class="d-flex justify-content-center">
                 <div class="row span7 text-center ">
                     <button type="button" id="btnCancel" class="btn btn-danger mr-2 ">重置</button>
-                    <button type="button" id="btnSave" class="btn btn-primary ml-2 ">保存</button>
+                    <button type="submit" id="btnSave" class="btn btn-primary ml-2 ">下一步</button>
                 </div>
             </div>
 
@@ -83,9 +85,7 @@
     <script src="{% static 'plugins/select2-4.1.0/js/zh-CN.js' %}"></script>
 
     <script type="text/javascript">
-
         $('#participants').select2();
-
 
         /* 初始化时间选择器 */
         $(".form_datetime").datetimepicker({
@@ -96,25 +96,7 @@
         $("#btnCancel").click(function () {
             window.location.reload();
         });
-        $("#btnSave").click(function () {
-            var form = $("#addForm");
-            var data = form.serialize();
-            $.ajax({
-                type: form.attr('method'),
-                url: "{% url 'agenda:create-group' %}",
-                data: data,
-                cache: false,
-                success: function (msg) {
-                    if (msg.result) {
-                        layer.alert('数据保存成功！', {icon: 1}, function (index) {
-                            parent.location.reload();
-                        });
-                    } else {
-                        layer.alert('数据保存失败,请将信息填写完整！', {icon: 5});
-                    }
-                }
-            });
-        });
+
     </script>
 
 {% endblock %}
