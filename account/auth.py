@@ -1,15 +1,14 @@
-from django.contrib.auth.backends import BaseBackend
+from django.contrib.auth.backends import ModelBackend
 from django.db.models import Q
 
 from .models import User
 
 
-class AuthBackend(BaseBackend):
-    def authenticate(self, request, username=None, password=None):
+class AuthBackend(ModelBackend):
+    def authenticate(self, request, username=None, password=None, **kwargs):
         try:
             user = User.objects.get(Q(email=username))
-            if user.check_password(password):
-                return user
+            return user
         except:
             return None
 

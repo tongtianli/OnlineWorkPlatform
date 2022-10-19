@@ -5,9 +5,9 @@
             <div class="col-sm">
                 <div class="d-flex justify-content-center">
                     选择
-                    <a id="joinGroup" class="btn btn-primary">加入</a>
+                    <a href="{% url 'account:join-group' %}" id="joinGroup" class="btn btn-primary">加入</a>
                     或者
-                    <a id="createGroup" class="btn btn-primary">创建一个组</a>
+                    <a href="{% url 'account:create-group' %}" id="createGroup" class="btn btn-primary">创建一个组</a>
                 </div>
             </div>
         </div>
